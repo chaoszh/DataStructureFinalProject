@@ -15,6 +15,7 @@ struct Member
 
 	Member()
 	{
+
 	}
 
 	Member(int _number, string _name, string _sex, int _age, string _occupation)
@@ -24,7 +25,9 @@ struct Member
 		sex = _sex;
 		age = _age;
 		occupation = _occupation;
+		next = nullptr;
 	}
+
 };
 
 class ExamSystem
@@ -34,7 +37,7 @@ public:
 	~ExamSystem();
 
 	//insert member
-	void Insert(Member newNode, int pos = 0);
+	void Insert(Member* newNode, int pos);
 
 	//delete member
 	void Delete(int number);
@@ -52,10 +55,10 @@ public:
 	void print_all();
 
 private:
-	Member* first;
-	int total;
+	Member* first;//表头节点
+	int total = 0;
 
-	Member* find(int number);
+	Member* find(int pos);
 	Member* find_pre_withNAME(string name);
 	Member* find_pre_withNUMBER(int number);
 	

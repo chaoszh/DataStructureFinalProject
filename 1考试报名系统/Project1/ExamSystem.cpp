@@ -4,9 +4,7 @@
 
 ExamSystem::ExamSystem()
 {
-	//初始化
 	first = new Member();
-	total = 0;
 }
 
 ExamSystem::~ExamSystem()
@@ -26,21 +24,39 @@ ExamSystem::~ExamSystem()
 /*********/
 /*添加操作*/
 /*********/
-void ExamSystem::Insert(Member newNode, int pos)
+void ExamSystem::Insert(Member* newNode, int pos)
 {
+	//如果信息输入错误 newNode为空
+	if (!newNode)return;
+
+	//考生的考号不允许重复
 	//apointed position is out of range
-	if (pos > total + 1 || pos < 0)
+	if (pos > total || pos < 0)
 	{
 		cout << "错误！插入考生的位置超出范围。";
 		return;
 	}
-	//no apointed position
-	if (pos == 0) pos = total + 1;
 
-	//insert
-	Member* pre = find(pos - 1);
-	if(pre->next)newNode.next = pre->next;
-	pre->next = &newNode;
+	//插入
+	///如果在第一个元素的位置插入
+	if (pos == 0)
+	{
+		newNode->next = first->next;
+		first->next = newNode;
+	}
+	///在末尾位置插入
+	else if (pos == total)
+	{
+		Member* pre = find(pos - 1);
+		pre->next = newNode;
+	}
+	///在中间插入
+	else
+	{
+		Member* pre = find(pos - 1);
+		newNode->next = pre->next;
+		pre->next = newNode;
+	}
 
 	//change the total number
 	total++;
@@ -151,7 +167,7 @@ void ExamSystem::print_all()
 	Member* iter = first;
 	while (iter->next)
 	{
-		iter++;
+		iter = iter->next;
 		print_stu_ifo(iter);
 	}
 
@@ -167,18 +183,19 @@ void ExamSystem::print_all()
 /******************/
 /*找到指定序号的学生*/
 /******************/
-Member* ExamSystem::find(int number)
+Member* ExamSystem::find(int pos)
 {
-	if (number > total || number < 0)
+	//排除错误范围 隐形排除空链表的情况（total==0）
+	if (pos >= total || pos < 0)
 	{
 		cout << "错误！指定序号超出范围！";
 		return nullptr;
 	}
 	
-	//point to ZERO
-	Member* iter = first;
+	//指向第一个元素
+	Member* iter = first->next;
 	int seq = 0;
-	while (seq!=number)
+	while (seq!=pos)
 	{
 		seq++;
 		iter = iter->next;

@@ -3,7 +3,7 @@
 using namespace std;
 
 int menu();
-Member create();
+Member* create();
 enum 
 {
 	CANCEL,		//取消操作
@@ -17,7 +17,7 @@ enum
 int main()
 {
 	ExamSystem system;
-	
+
 	//initial the system
 	int number;
 	cout << "首先请建立考生信息系统！\n"
@@ -26,8 +26,8 @@ int main()
 	cout << "请依次输入要插入的考生的考号，姓名，性别，年龄，及报考类别！\n";
 	for (int i = 0; i < number; i++)
 	{
-		Member newNode = create();
-		system.Insert(newNode);
+		Member* newNode = create();
+		system.Insert(newNode, i);
 	}
 
 	//construction
@@ -38,39 +38,53 @@ int main()
 		switch (Construction)
 		{
 		case(CANCEL):
+		{
+			cout << "感谢使用本系统！";
 			flag = 0;
 			break;
+		}
 		case(INSERT):
-			int pos;
+		{
+			int number;
 			cout << "请输入你要插入的考生的位置：";
-			cin >> pos;
+			cin >> number;
 			cout << "请依次输入要插入的考生的考号，姓名，性别，年龄，及报考类别！\n";
-			system.Insert(create());
+			Member* temp = create();
+			system.Insert(temp, number - 1);
 			break;
+		}
 		case(DELETE):
+		{
 			int candidate_number;
 			cout << "请输入要删除的考生的考号：";
 			cin >> candidate_number;
 			system.Delete(candidate_number);
 			break;
+		}
 		case(SEARCH):
-			int candidate_number2;
+		{
+			int candidate_number;
 			cout << "请输入要查找的考生的考号：";
-			cin >> candidate_number2;
+			cin >> candidate_number;
 			cout << "考号\t姓名\t性别\t年龄\t报考类别\t\n";
-			system.print_stu_ifo(system.Find(candidate_number2));
+			system.print_stu_ifo(system.Find(candidate_number));
 			break;
+		}
 		case(CALCULATE):
+		{
 			system.print_all();
 			break;
+		}
 		case(MODIFY):
+		{
 			int candidate_number3;
 			cout << "请输入要修改的考生的考号：";
 			cin >> candidate_number3;
 			cout << "请依次输入要修改的考生的考号，姓名，性别，年龄，及报考类别！\n";
-			Member* newNode = &create();
+			Member* newNode = create();
 			system.Modify(candidate_number3, newNode);
 			break;
+		}
 		}
 	}
 
@@ -86,7 +100,7 @@ int menu()
 	return s;
 }
 
-Member create()
+Member* create()
 {
 	int number;
 	string name;
@@ -96,7 +110,21 @@ Member create()
 
 	cin >> number >> name >> sex >> age >> occupation;
 
-	Member newNode = Member(number, name, sex, age, occupation);
+	Member* newNode = new Member(number,name,sex,age,occupation);
 
-	return newNode;
+	//格式检查
+	bool isAccurate = 1;
+	if (sex != "男"&&sex != "女")
+	{
+		isAccurate = 0;
+		cout << "错误！学生性别信息输入格式有误！\n";
+		cout << newNode->number << '\t'
+			<< newNode->name << '\t'
+			<< newNode->sex << '\t'
+			<< newNode->age << '\t'
+			<< newNode->occupation << '\n';
+	}
+
+	if (!isAccurate)return nullptr;
+	else return newNode;
 }
