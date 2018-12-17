@@ -15,6 +15,12 @@ public:
 	void print();
 private:
 	list<T>a, b, c;
+
+	//validity()正确返回1 错误返回0
+	bool validity();
+	//检查1正整数2递增序列 有错返回>=1
+	bool numberValidity(T x);
+	bool orderValidity(list<T> x);
 };
 
 
@@ -31,17 +37,25 @@ template<typename T>
 intersect<T>::intersect()
 {
 	int input;
-	cout << "输入序列a的内容（空格键隔开各个元素，输入-1结束）：" << endl;
+	
+	bool flag = 1;
+	while (flag)
+	{
+		cout << "输入序列a的内容（空格键隔开各个元素，输入-1结束）：" << endl;
+		while (cin >> input && input!=-1)
+		{
+			a.push_back(input);
+		}
+		cout << "输入序列b的内容（空格键隔开各个元素，按回车键结束）：" << endl;
+		while (cin >> input && input != -1)
+		{
+			b.push_back(input);
+		}
 
-	while (cin >> input && input!=-1)
-	{
-		a.push_back(input);
+		//检查是否正确
+		flag=1-validity();
 	}
-	cout << "输入序列b的内容（空格键隔开各个元素，按回车键结束）：" << endl;
-	while (cin >> input && input != -1)
-	{
-		b.push_back(input);
-	}
+
 
 	findIntersection();
 	print();
@@ -60,11 +74,7 @@ void intersect<T>::findIntersection()
 	auto iterA = a.begin();
 	auto iterB = b.begin();
 
-	//flag==0 continue
-	//flag==1 running out of a
-	//flag==2 running out of b
-	int flag = 0;
-	while (flag == 0)
+	while (true)
 	{
 		int A = *iterA;
 		int B = *iterB;
@@ -103,4 +113,57 @@ void intersect<T>::print()
 		iter++;
 	}
 	cout << endl;
+}
+
+template<typename T>
+bool intersect<T>::validity()
+{
+	int validity = 0;
+	validity += orderValidity(a);
+	validity += orderValidity(b);
+	//正确
+	if (validity == 0)
+	{
+		return 1;
+	}
+	//错误
+	else
+	{
+		cout << "输入有误，请重新输入。" << endl << endl;
+		return 0;
+	}
+}
+
+template<typename T>
+bool intersect<T>::numberValidity(T x)
+{
+	if (x <= 0)return 1;
+	else return 0;
+}
+
+template<typename T>
+bool intersect<T>::orderValidity(list<T> x)
+{
+	auto p1 = x.begin();
+	auto p2 = p1++;
+	while (p1!=x.end())
+	{
+		//numberValidity
+		if (numberValidity(*p1))
+		{
+			return 1;
+		}
+
+		if (*p1 <= *p2)
+		{
+			p1++;
+			p2++;
+			continue;
+		}
+		else
+		{
+			return 1;
+		}
+	}
+	return 0;
 }
