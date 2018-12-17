@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <string>
-#include <stack>
 #include <vector>
 using namespace std;
 
@@ -24,9 +23,13 @@ struct symbol
 		{
 			value = 3;
 		}
-		else if (_symbol == '{' || _symbol == '[' || _symbol == '(' || _symbol == '}' || _symbol == ']' || _symbol == ')')
+		else if (_symbol == '{' || _symbol == '[' || _symbol == '(' )
 		{
 			value = 1;
+		}
+		else if (_symbol == '}' || _symbol == ']' || _symbol == ')')
+		{
+			value = 0;
 		}
 	}
 	void operator=(char x)
@@ -63,20 +66,28 @@ struct symbol
 		}
 		else return false;
 	}
+
+	bool operator!=(char x)
+	{
+		if (_symbol != x)
+		{
+			return true;
+		}
+		else return false;
+	}
 };
 
 class Expression
 {
 public:
 	Expression();
-	
 
 private:
-	
-	char expression[20];
+	vector<symbol> Symbol;
+	vector<string> Digit;
 
-	bool Input();
-	vector<int> digit;
+	void Input();
+	bool Build();
 
 };
 
