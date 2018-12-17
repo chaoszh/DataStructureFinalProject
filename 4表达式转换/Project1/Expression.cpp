@@ -21,7 +21,7 @@ bool Expression::Input()
 		if (temp <= '9' && temp >= '0')
 		{
 			//默认数字不会输错
-			char digit[20];
+			char digit[20] = {};
 			int i = 0;
 			while (temp <= '9' && temp >= '0' || temp == '.')
 			{
@@ -60,25 +60,25 @@ bool Expression::Input()
 	}
 }
 
-//other constructions
-float transIntoDigit(char d[])
-{
-	float result = 0;
-	int length = sizeof(d) / sizeof(char);
-	int i = 0;
-	while (d[i] != '.'&&i < length)
-	{
-		result = result * 10 + d[i];
-		i++;
-	}
-	if (d[i] == '.')
-	{
-		int _i = 1;
-		while (i+_i < length)
-		{
-			result = result + d[i + _i] / (10 * _i);
-			_i++;
-		}
-	}
-	return result;
-}
+////other constructions
+//float transIntoDigit(char d[])
+//{
+//	float result = 0;
+//	int length = sizeof(d) / sizeof(char);
+//	int i = 0;
+//	while (d[i] != '.'&&i < length)
+//	{
+//		result = result * 10 + d[i];
+//		i++;
+//	}
+//	if (d[i] == '.')
+//	{
+//		int _i = 1;
+//		while (i+_i < length)
+//		{
+//			result = result + d[i + _i] / (10 * _i);
+//			_i++;
+//		}
+//	}
+//	return result;
+//}
