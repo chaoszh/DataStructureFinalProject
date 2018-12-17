@@ -25,8 +25,14 @@ maze::maze()
 	print();
 	cout << "地图导入完毕，默认起点为(1,1)，终点为(7,7)。" << endl << endl;
 
-	findSolution();
-	printSolution();
+	if (findSolution())
+	{
+		printSolution();
+	}
+	else
+	{
+		cout << "该迷宫无解。" << endl << endl;
+	}
 }
 
 maze::~maze()
@@ -34,9 +40,9 @@ maze::~maze()
 
 }
 
-void maze::findSolution()
+bool maze::findSolution()
 {
-	findPath(point(0, 0));
+	return findPath(point(0, 0));
 }
 
 bool maze::findPath(point p)
@@ -59,7 +65,7 @@ bool maze::findPath(point p)
 			path.push(point(x, y));
 			return true;
 		}
-		else if (findPath(point(_x, _y)))
+		else if (findPath(point(_x, _y)))	//递归运用findPath()
 		{
 			path.push(point(x, y));
 			return true;
