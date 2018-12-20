@@ -9,10 +9,8 @@ Expression::Expression()
 
 void Expression::Input()
 {
-	Symbol.push_back(symbol('{'));
-
 	cout << "请输入表达式：";
-	int i = 0;
+	int bracketValue = 0;
 	while (true)
 	{
 		char temp = getchar();
@@ -32,6 +30,7 @@ void Expression::Input()
 			//把字符数组转成数字
 			//transIntoDigit(digit);
 			//用string保存该数字
+			digit[i]=' ';
 			Digit.push_back(digit);
 		}
 
@@ -40,25 +39,24 @@ void Expression::Input()
 		if (temp == '+' || temp == '-' || temp == '*' || temp == '/')
 		{
 			symbol x = temp;
+			x.value += bracketValue;
 			Symbol.push_back(x);
 		}
-		//判断是不是括号
+		//判断是不是括号，改变优先级
 		else if (temp == '{' || temp == '[' || temp == '(')
 		{
-			symbol x = temp;
-			Symbol.push_back(x);
+			Bracket.push_back(temp);
+			bracketValue += 2;
 		}
 		else if (temp == '}' || temp == ']' || temp == ')')
 		{
-			symbol x = temp;
-			Symbol.push_back(x);
+			Bracket.pop_back();
+			bracketValue -= 2;
 		}
-
 		//判断是不是空
-		if(temp=='\n')
+		else if(temp=='\n')
 		{
 			//结束输出
-			Symbol.push_back(symbol('}'));
 			break;
 		}
 	}
@@ -66,81 +64,45 @@ void Expression::Input()
 
 bool Expression::Build()
 {
-	auto SymbolIterPre = Symbol.begin();
-	auto SymbolIter = ++Symbol.begin();
-	auto SymbolIterNext = ++(++Symbol.begin());
+	auto SymbolIter = Symbol.begin();
 	auto DigitIter = Digit.begin();
-	bool digitFlag = 1;
 	
 	while (true)
 	{
-		//对应当前二元运算符的前一个数字/对象
-		if (*SymbolIter != '('&&
-			*SymbolIter != '['&&
-			*SymbolIter != '{'&&
-			*SymbolIter != '}'&&
-			*SymbolIter != ']'&&
-			*SymbolIter != ')')
+		if (Symbol.size()==1)
 		{
-			if (digitFlag)
+			string newDigit = "";
+			newDigit = *DigitIter + *(DigitIter + 1) + SymbolIter->_symbol + ' ';
+			*DigitIter = newDigit;
+			DigitIter = Digit.erase(DigitIter + 1);
+			break;
+		}
+		//如果当前指向的运算符优先级最高，归约
+		///指向最后一个运算符（运算符优先级已经是从小到大了）||当前运算符优先级大于后面的运算符
+		else if (SymbolIter + 1 == Symbol.end() || *SymbolIter >= *(SymbolIter + 1))
+		{
+			//替换原Digit
+			string newDigit = "";
+			newDigit = *DigitIter + *(DigitIter + 1) + SymbolIter->_symbol + ' ';
+			*DigitIter = newDigit;
+			Digit.erase(DigitIter+1);
+			if(DigitIter!=Digit.begin())DigitIter--;
+			//删除运算符
+			if (SymbolIter != Symbol.begin())
 			{
-				digitFlag = 0;
+				SymbolIter--;
+				Symbol.erase(SymbolIter + 1);
 			}
 			else
 			{
-				DigitIter++;
+				SymbolIter = Symbol.erase(SymbolIter);
 			}
 		}
-
-		//如果当前指向的运算符优先级最高
-		if (*SymbolIter > *SymbolIterNext)
-		{
-			//两边都是括号且是同一朝向,continue
-			if ((SymbolIter->value == 1 && SymbolIterNext->value == 1) || (SymbolIter->value == 0 && SymbolIterNext->value == 0))
-			{
-				SymbolIterPre++;
-				SymbolIter++;
-				SymbolIterNext++;
-				continue;
-			}
-			//两边是正经运算符或者正经括号,开始归约
-			else
-			{
-				//两边是括号
-				if ((SymbolIter->value + SymbolIterNext->value) == 1)
-				{
-					cout << "come in";
-				}
-				else
-				//两边都是运算符/一边运算符一边括号
-				{
-					string newDigit = "";
-					auto DigitIterNext = DigitIter;
-					DigitIterNext++;
-					newDigit = *DigitIter + SymbolIter->_symbol + *DigitIterNext;
-					//替换原Digit
-					*DigitIter = newDigit;
-					Digit.erase(DigitIterNext);
-					//删除Symbol
-					Symbol.erase(SymbolIter);
-					SymbolIter = SymbolIterPre;
-					SymbolIter++;
-					SymbolIterNext++;
-				}
-			}
-		}
-		//运算符优先级不够高,检测下一个运算符
 		else
 		{
-			SymbolIterPre++;
+			//迭代
 			SymbolIter++;
-			SymbolIterNext++;
-			continue;
-		}
-
-		if (Digit.size() == 1)
-		{
-			break;
+			DigitIter++;
 		}
 	}
 	return true;
