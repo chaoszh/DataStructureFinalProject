@@ -4,6 +4,7 @@ Expression::Expression()
 {
 	Input();
 	Build();
+	Digit[0].pop_back();
 	cout << Digit[0];
 }
 
@@ -11,54 +12,80 @@ void Expression::Input()
 {
 	cout << "请输入表达式：";
 	int bracketValue = 0;
+	char str[20] = {};
+	cin >> str;
+	cout << str;
+	int x = 0;
+
 	while (true)
 	{
-		char temp = getchar();
-
-		//判断是不是数字
-		if (temp <= '9' && temp >= '0')
+		//判断是不是空
+		if (str[x] == '\n')
 		{
-			//默认数字不会输错
-			char digit[20] = {};
-			int i = 0;
-			while (temp <= '9' && temp >= '0' || temp == '.')
-			{
-				digit[i] = temp;
-				i++;
-				temp = getchar();
-			}
-			//把字符数组转成数字
-			//transIntoDigit(digit);
-			//用string保存该数字
-			digit[i]=' ';
-			Digit.push_back(digit);
+			//结束输出
+			break;
 		}
-
 		//判断是不是运算符号
-		//不用else if：判断是否为数字的时候会多吞一个char
-		if (temp == '+' || temp == '-' || temp == '*' || temp == '/')
+		else if (str[x] == '+' || str[x] == '-' || str[x] == '*' || str[x] == '/')
 		{
+			char temp = str[x];
 			symbol x = temp;
 			x.value += bracketValue;
 			Symbol.push_back(x);
 		}
 		//判断是不是括号，改变优先级
-		else if (temp == '{' || temp == '[' || temp == '(')
+		else if (str[x] == '{' || str[x] == '[' || str[x] == '(')
 		{
-			Bracket.push_back(temp);
+			Bracket.push_back(str[x]);
 			bracketValue += 2;
+
+			if (str[x + 1] == '-')//负数
+			{
+				//默认数字不会输错
+				char digit[20] = {};
+				x+=2;
+				digit[0] = '-';
+				digit[1] = str[x];
+				int i = 2;
+				while (str[x + 1] <= '9' && str[x + 1] >= '0' || str[x + 1] == '.')
+				{
+					x++;
+					digit[i] = str[x];
+					i++;
+				}
+				//把字符数组转成数字
+				//transIntoDigit(digit);
+				//用string保存该数字
+				digit[i] = ' ';
+				Digit.push_back(digit);
+			}
 		}
-		else if (temp == '}' || temp == ']' || temp == ')')
+		//判断是不是数字
+		else if (str[x] <= '9' && str[x] >= '0')
+		{
+			//默认数字不会输错
+			char digit[20] = {};
+			digit[0] = str[x];
+			int i = 1;
+			while (str[x+1] <= '9' && str[x+1] >= '0' || str[x+1] == '.')
+			{
+				x++;
+				digit[i] = str[x];
+				i++;
+			}
+			//把字符数组转成数字
+			//transIntoDigit(digit);
+			//用string保存该数字
+			digit[i] = ' ';
+			Digit.push_back(digit);
+		}
+		else if (str[x] == '}' || str[x] == ']' || str[x] == ')')
 		{
 			Bracket.pop_back();
 			bracketValue -= 2;
 		}
-		//判断是不是空
-		else if(temp=='\n')
-		{
-			//结束输出
-			break;
-		}
+
+		x++;
 	}
 }
 
