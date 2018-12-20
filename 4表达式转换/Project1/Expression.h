@@ -17,20 +17,20 @@ struct symbol
 		_symbol = x;
 		if (_symbol == '+' || _symbol == '-')
 		{
-			value = 2;
+			value = 1;
 		}
 		else if (_symbol == '*' || _symbol == '/')
 		{
-			value = 3;
+			value = 2;
 		}
-		else if (_symbol == '{' || _symbol == '[' || _symbol == '(' )
-		{
-			value = 1;
-		}
-		else if (_symbol == '}' || _symbol == ']' || _symbol == ')')
-		{
-			value = 0;
-		}
+		//else if (_symbol == '{' || _symbol == '[' || _symbol == '(' )
+		//{
+		//	value = 1;
+		//}
+		//else if (_symbol == '}' || _symbol == ']' || _symbol == ')')
+		//{
+		//	value = 0;
+		//}
 	}
 	void operator=(char x)
 	{
@@ -50,9 +50,9 @@ struct symbol
 	}
 	
 	//judge value
-	bool operator>(symbol x)
+	bool operator>=(symbol x)
 	{
-		if (value > x.value)
+		if (value >= x.value)
 		{
 			return true;
 		}
@@ -84,6 +84,7 @@ public:
 
 private:
 	vector<symbol> Symbol;
+	vector<char> Bracket;
 	vector<string> Digit;
 
 	void Input();
