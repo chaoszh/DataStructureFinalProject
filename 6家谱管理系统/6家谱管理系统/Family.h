@@ -54,11 +54,14 @@ public:
 private:
 	void Begin();
 	void Struction();
-	void Delete();
+
 
 	Member* find(string name);
 	Member* findUpper(string name);
+	Member* findUpper(Member* member);
+	Member* findTree(string name);
 
+	void deleteAll();
 	void deleteMember(Member* m);
 };
 

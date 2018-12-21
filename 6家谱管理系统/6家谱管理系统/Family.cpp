@@ -10,6 +10,7 @@ Family::Family()
 
 Family::~Family()
 {
+	deleteAll();
 }
 
 
@@ -48,11 +49,10 @@ void Family::Struction()
 			cout << "请输入要建立家庭的人的姓名：";
 			cin >> name;
 			Member* father = find(name);
-			bool flagnew = 0;
 			if (father == nullptr)
 			{
-				flagnew = 1;
 				father = new Member(name);
+				forest.push_back(father);
 			}
 			int number;
 			cout << "请输入" << name << "的儿女人数：";
@@ -65,7 +65,6 @@ void Family::Struction()
 				Member* child = new Member(childname);
 				father->appendChild(child);
 			}
-			if (flagnew == 1)forest.push_back(father);
 			cout << name << "的第一代子孙是：";
 			Member*ptr = father->child;
 			while (ptr!=nullptr)
@@ -84,13 +83,14 @@ void Family::Struction()
 			string childName;
 			cout << "请输入" << fatherName << "新添加的儿子（或女儿）的姓名：";
 			cin >> childName;
-			Member* child = new Member(childName);
+			Member* child = findTree(childName);
+			if (child == nullptr)child = new Member(childName);
 			father->appendChild(child);
 			cout << fatherName << "的第一代子孙是：";
 			child = father->child;
 			while (child != nullptr)
 			{
-				cout << child->name;
+				cout << child->name << ' ';
 				child = child->neighbor;
 			}
 			cout << endl << endl << endl;
@@ -100,19 +100,9 @@ void Family::Struction()
 			string fatherName;
 			cout << "请输入要解散家庭的人的姓名：";
 			cin >> fatherName;
-			cout << "要解散家庭的人是：" << fatherName << endl;
-			Member* fatherUpper = findUpper(fatherName);
-			if (fatherUpper->child->name == fatherName)
-			{
-				deleteMember(fatherUpper->child);
-				fatherUpper->child == nullptr;
-			}
-			else if (fatherUpper->neighbor->name == fatherName)
-			{
-				deleteMember(fatherUpper->neighbor);
-				fatherUpper->neighbor == nullptr;
-			}
-
+			cout << "要解散家庭的人是：" << fatherName << endl << endl;
+			Member* father = find(fatherName);
+			deleteMember(father);
 		}
 		else if (order == 'D')
 		{
@@ -120,6 +110,7 @@ void Family::Struction()
 			string nameAlter;
 			cout << "请输入要更改姓名的人的目前姓名：";
 			cin >> name;
+			cout << "请输入更改后的姓名：";
 			cin >> nameAlter;
 			find(name)->name = nameAlter;
 			cout << name << "已更名为" << nameAlter << endl << endl;
@@ -155,6 +146,7 @@ Member* Family::find(string name)
 			if (ptr->child != nullptr)node.push(ptr->child);
 			if (ptr->neighbor != nullptr)node.push(ptr->neighbor);
 		}
+		iter++;
 	}
 	return nullptr;
 }
@@ -179,28 +171,86 @@ Member* Family::findUpper(string name)
 			if (ptr->child != nullptr)node.push(ptr->child);
 			if (ptr->neighbor != nullptr)node.push(ptr->neighbor);
 		}
+		iter++;
 	}
 	return nullptr;
 }
 
-void Family::deleteMember(Member* m)
+Member* Family::findUpper(Member* member)
 {
-	//Member*iter = m;
-	//stack<Member*> node;
-	//node.push(iter);
-	//while (node.size() != 0)
-	//{
-	//	Member* ptr = node.top();
-	//	//judge ptr
-	//	if (ptr->child == nullptr && ptr->neighbor == nullptr)
-	//	{
-	//		delete ptr;
-	//	}
-	//	else
-	//	{
-	//		//update stack
-	//		if (ptr->child != nullptr)node.push(ptr->child);
-	//		if (ptr->neighbor != nullptr)node.push(ptr->neighbor);
-	//	}
-	//}
+	vector<Member*>::iterator iter = forest.begin();
+	while (iter != forest.end())
+	{
+		stack<Member*> node;
+		node.push(*iter);
+		while (node.size() != 0)
+		{
+			Member* ptr = node.top();
+			node.pop();
+			//judge ptr
+			if (ptr->child == member || ptr->neighbor == member)
+			{
+				return ptr;
+			}
+			//update stack
+			if (ptr->child != nullptr)node.push(ptr->child);
+			if (ptr->neighbor != nullptr)node.push(ptr->neighbor);
+		}
+		iter++;
+	}
+	return nullptr;
+}
+
+Member* Family::findTree(string name)
+{
+	vector<Member*>::iterator iter = forest.begin();
+	while (iter != forest.end())
+	{
+		if ((*iter)->name == name)
+		{
+			Member* temp = *iter;
+			forest.erase(iter);
+			return temp;
+		}
+		iter++;
+	}
+	return nullptr;
+}
+
+void Family::deleteAll()
+{
+	vector<Member*>::iterator iter = forest.begin();
+	while (iter != forest.end())
+	{
+		deleteMember(*iter);
+		iter++;
+	}
+}
+
+void Family::deleteMember(Member* member)
+{
+	Member*m = member;
+	Member* upperNode = findUpper(member);
+	if (upperNode != nullptr)
+	{
+		if(upperNode->child == member)upperNode->child = nullptr;
+		else if (upperNode->neighbor == member)upperNode->neighbor = nullptr;
+	}
+	stack<Member*> node;
+	node.push(m);
+	while (node.size() != 0)
+	{
+		Member* ptr = node.top();
+		node.pop();
+		//judge ptr
+		if (ptr->child != nullptr)
+		{
+			node.push(ptr->child);
+		}
+		if (ptr->neighbor != nullptr)
+		{
+			node.push(ptr->neighbor);
+		}
+		delete(ptr);
+	}
 }
