@@ -57,7 +57,7 @@ void Family::Struction()
 			int number;
 			cout << "请输入" << name << "的儿女人数：";
 			cin >> number;
-			cout << "请依次输入P0的儿女的姓名：";
+			cout << "请依次输入" << name << "的儿女的姓名：";
 			for (int i = 0; i < number; i++)
 			{
 				string childname;
@@ -77,15 +77,52 @@ void Family::Struction()
 		}
 		else if (order == 'B')
 		{
-
+			string fatherName;
+			cout << "请输入要添加的儿子（或女儿）的人的姓名：";
+			cin >> fatherName;
+			Member* father = find(fatherName);
+			string childName;
+			cout << "请输入" << fatherName << "新添加的儿子（或女儿）的姓名：";
+			cin >> childName;
+			Member* child = new Member(childName);
+			father->appendChild(child);
+			cout << fatherName << "的第一代子孙是：";
+			child = father->child;
+			while (child != nullptr)
+			{
+				cout << child->name;
+				child = child->neighbor;
+			}
+			cout << endl << endl << endl;
 		}
 		else if (order == 'C')
 		{
+			string fatherName;
+			cout << "请输入要解散家庭的人的姓名：";
+			cin >> fatherName;
+			cout << "要解散家庭的人是：" << fatherName << endl;
+			Member* fatherUpper = findUpper(fatherName);
+			if (fatherUpper->child->name == fatherName)
+			{
+				deleteMember(fatherUpper->child);
+				fatherUpper->child == nullptr;
+			}
+			else if (fatherUpper->neighbor->name == fatherName)
+			{
+				deleteMember(fatherUpper->neighbor);
+				fatherUpper->neighbor == nullptr;
+			}
 
 		}
 		else if (order == 'D')
 		{
-
+			string name;
+			string nameAlter;
+			cout << "请输入要更改姓名的人的目前姓名：";
+			cin >> name;
+			cin >> nameAlter;
+			find(name)->name = nameAlter;
+			cout << name << "已更名为" << nameAlter << endl << endl;
 		}
 		else if (order == 'E')
 		{
@@ -103,27 +140,67 @@ Member* Family::find(string name)
 	vector<Member*>::iterator iter = forest.begin();
 	while (iter != forest.end())
 	{
-		//康康头
-		if ((*iter)->name == name)
+		stack<Member*> node;
+		node.push(*iter);
+		while (node.size() != 0)
 		{
-			return *iter;
-		}
-		//康康子女
-		else
-		{
-			Member* ptr = (*iter)->child;
-			while (ptr != nullptr)
+			Member* ptr = node.top();
+			node.pop();
+			//judge ptr
+			if (ptr->name == name)
 			{
-				//康康自己
-				if (ptr->name == name)return ptr;
-				//康康邻居
-				else
-				{
-					                                                                                                 
-				}
+				return ptr;
 			}
+			//update stack
+			if (ptr->child != nullptr)node.push(ptr->child);
+			if (ptr->neighbor != nullptr)node.push(ptr->neighbor);
 		}
-		iter++;
 	}
 	return nullptr;
+}
+
+Member* Family::findUpper(string name)
+{
+	vector<Member*>::iterator iter = forest.begin();
+	while (iter != forest.end())
+	{
+		stack<Member*> node;
+		node.push(*iter);
+		while (node.size() != 0)
+		{
+			Member* ptr = node.top();
+			node.pop();
+			//judge ptr
+			if (ptr->child->name == name || ptr->neighbor->name == name)
+			{
+				return ptr;
+			}
+			//update stack
+			if (ptr->child != nullptr)node.push(ptr->child);
+			if (ptr->neighbor != nullptr)node.push(ptr->neighbor);
+		}
+	}
+	return nullptr;
+}
+
+void Family::deleteMember(Member* m)
+{
+	//Member*iter = m;
+	//stack<Member*> node;
+	//node.push(iter);
+	//while (node.size() != 0)
+	//{
+	//	Member* ptr = node.top();
+	//	//judge ptr
+	//	if (ptr->child == nullptr && ptr->neighbor == nullptr)
+	//	{
+	//		delete ptr;
+	//	}
+	//	else
+	//	{
+	//		//update stack
+	//		if (ptr->child != nullptr)node.push(ptr->child);
+	//		if (ptr->neighbor != nullptr)node.push(ptr->neighbor);
+	//	}
+	//}
 }
