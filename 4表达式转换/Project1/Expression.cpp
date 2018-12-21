@@ -12,15 +12,28 @@ void Expression::Input()
 {
 	cout << "请输入表达式：";
 	int bracketValue = 0;
-	char str[20] = {};
-	cin >> str;
-	cout << str;
-	int x = 0;
+	char str[30] = {};
+	
+	char temp;
+	str[0] = '(';
+	int i = 1;
+	while (temp=getchar())
+	{
+		if (temp == '\n')break;
+		else if (temp == ' ')continue;
+		else
+		{
+			str[i] = temp;
+			i++;
+		}
+	}
 
+	int x = 0;
+	int length = sizeof(str) / sizeof(char);
 	while (true)
 	{
 		//判断是不是空
-		if (str[x] == '\n')
+		if (x==length)
 		{
 			//结束输出
 			break;
@@ -134,27 +147,3 @@ bool Expression::Build()
 	}
 	return true;
 }
-
-
-////other constructions
-//float transIntoDigit(char d[])
-//{
-//	float result = 0;
-//	int length = sizeof(d) / sizeof(char);
-//	int i = 0;
-//	while (d[i] != '.'&&i < length)
-//	{
-//		result = result * 10 + d[i];
-//		i++;
-//	}
-//	if (d[i] == '.')
-//	{
-//		int _i = 1;
-//		while (i+_i < length)
-//		{
-//			result = result + d[i + _i] / (10 * _i);
-//			_i++;
-//		}
-//	}
-//	return result;
-//}
