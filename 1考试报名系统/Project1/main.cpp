@@ -16,7 +16,7 @@ enum
 
 int main()
 {
-	ExamSystem system;
+	ExamSystem System;
 
 	//initial the system
 	int number;
@@ -27,7 +27,7 @@ int main()
 	for (int i = 0; i < number; i++)
 	{
 		Member* newNode = create();
-		system.Insert(newNode, i);
+		System.Insert(newNode, i);
 	}
 
 	//construction
@@ -50,7 +50,7 @@ int main()
 			cin >> number;
 			cout << "请依次输入要插入的考生的考号，姓名，性别，年龄，及报考类别！\n";
 			Member* temp = create();
-			system.Insert(temp, number - 1);
+			System.Insert(temp, number - 1);
 			break;
 		}
 		case(DELETE):
@@ -58,7 +58,7 @@ int main()
 			int candidate_number;
 			cout << "请输入要删除的考生的考号：";
 			cin >> candidate_number;
-			system.Delete(candidate_number);
+			System.Delete(candidate_number);
 			break;
 		}
 		case(SEARCH):
@@ -67,12 +67,12 @@ int main()
 			cout << "请输入要查找的考生的考号：";
 			cin >> candidate_number;
 			cout << "考号\t姓名\t性别\t年龄\t报考类别\t\n";
-			system.print_stu_ifo(system.Find(candidate_number));
+			System.print_stu_ifo(System.Find(candidate_number));
 			break;
 		}
 		case(CALCULATE):
 		{
-			system.print_all();
+			System.print_all();
 			break;
 		}
 		case(MODIFY):
@@ -82,12 +82,13 @@ int main()
 			cin >> candidate_number3;
 			cout << "请依次输入要修改的考生的考号，姓名，性别，年龄，及报考类别！\n";
 			Member* newNode = create();
-			system.Modify(candidate_number3, newNode);
+			System.Modify(candidate_number3, newNode);
 			break;
 		}
 		}
 	}
 
+	system("pause");
 	return 0;
 }
 
