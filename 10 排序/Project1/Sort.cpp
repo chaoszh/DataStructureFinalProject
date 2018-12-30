@@ -15,53 +15,62 @@ Sort::Sort()
 	bool flag = true;
 	while (flag)
 	{
+		Datalist list;
+		list = datalist;
 		char Choice = choice();
 		switch (Choice) 
 		{
-		case '1':	//bubble
+		case '1':	//bubbleSort
 		{
-			
+			bubbleSort(list);
 			break;
 		}
-		case '2':	//
+		case '2':	//selectSort
 		{
-
+			selectSort(list);
+			break;
 		}
 		case '3':	//insertionSort
 		{
-			Datalist* p= &insertionSort(datalist);
-			cout << endl << "Address=" << p << " RETURN " << endl;
-
-			p->showDatalist();
-			cout << endl;
-			datalist.showDatalist();
+			insertionSort(list);
 			break;
 		}
-		case '4':
+		case '4':	//shellSort
 		{
-
+			shellSort(list);
+			break;
 		}
-		case '5':
+		case '5':	//quickSort
 		{
-
+			quickSort(list, 0, list.total - 1);
+			break;
 		}
-		case '6':
+		case '6':	//堆
 		{
-
+			heapSort(list);
+			break;
 		}
-		case '7':
+		case '7':	//归并
 		{
-
+			mergeSort(list);
+			break;
 		}
-		case '8':
+		case '8':	//基数
 		{
-
+			radixSort(list);
+			break;
 		}
 		case '9':
 		{
 			flag = false;
 		}
 		}
+
+		//debug
+		cout << endl;
+		list.showDatalist();
+		cout << endl;
+		datalist.showDatalist();
 	}
 }
 
@@ -70,31 +79,312 @@ Sort::~Sort()
 {
 }
 
-Datalist Sort::bubbleSort(const Datalist& List)
+void Sort::bubbleSort(Datalist& list)
 {
-	Datalist list;
-	list = List;
-
-	return list;
+	for (int i = 0; i < list.total - 1; i++)
+	{
+		for (int j = 0; j < list.total - i - 1; j++)
+		{
+			if (list[j] > list[j + 1])
+			{
+				int temp = list[j];
+				list[j] = list[j + 1];
+				list[j + 1] = temp;
+			}
+		}
+	}
 }
 
-Datalist Sort::insertionSort(const Datalist& List)
+void Sort::selectSort(Datalist& list)
 {
-	Datalist list = List;
+	for (int i = 0; i < list.total - 1; i++)
+	{
+		int min_index = i;
+		for (int j = i; j < list.total; j++)
+		{
+			if (list[min_index] > list[j])
+			{
+				min_index = j;
+			}
+		}
+		int temp = list[i];
+		list[i] = list[min_index];
+		list[min_index] = temp;
+	}
+}
+
+void Sort::insertionSort(Datalist& list)
+{
 	for (int t = 1; t < list.total; t++)
 	{
 		int temp = list[t];
 		int i = t - 1;
-		while (temp < list[i] && i >= 0)
+		while (temp < list[i] && i>=0)
 		{
 			list[i + 1] = list[i];
 			i--;
 		}
 		list[i + 1] = temp;
 	}
-	return list;
 }
 
+void Sort::shellSort(Datalist& list)
+{
+	int gap = 7;
+	while (gap >= 1)
+	{
+		//gap==N时的几个子序列都排好序
+		int start = gap - 1;
+		while (start >= 0)
+		{
+			for (int t = start + gap; t < list.total; t += gap)
+			{
+				int temp = list[t];
+				int i = t - gap;
+				while (temp < list[i] && i >= 0)
+				{
+					list[i + gap] = list[i];
+					i -= gap;
+				}
+				list[i + gap] = temp;
+			}
+			start--;
+
+			//debug
+			//cout << "(gap,start)==" << gap << ',' << start << ": ";
+			//list.showDatalist();
+			//cout << endl;
+		}
+		if (gap == 1)
+		{
+			break;
+		}
+		gap /= 2;
+	}
+}
+
+void Sort::quickSort(Datalist& list, int start, int end)
+{
+	if (end <= start)
+	{
+		return;
+	}
+	else
+	{
+		int mid = start;
+		for (int i = start; i <= end; i++)
+		{
+			if (list[i] < list[mid])
+			{
+				int temp = list[mid];
+				list[mid] = list[i];
+				list[i] = list[mid + 1];
+				list[mid + 1] = temp;
+				mid++;
+			}
+		}
+		quickSort(list, start, mid - 1);
+		quickSort(list, mid + 1, end);
+	}
+}
+
+void Sort::heapSort(Datalist& list)
+{
+	
+}
+void Sort::mergeSort(Datalist& list)
+{
+	int size = 1;
+	while (size < list.total)//size
+	{
+		int first = 0;
+		int second = 0 + size;
+		while (first < list.total)//first second
+		{
+			//compare
+			int a = first;
+			int b = second;
+			int* temp = new int[2 * size];
+			int temp_i = 0;
+			while (a < second&&b < second + size && b < list.total)//ab不为空
+			{
+				if (list[a] < list[b])
+				{
+					temp[temp_i] = list[a];
+					temp_i++;
+					a++;
+				}
+				else
+				{
+					temp[temp_i] = list[b];
+					temp_i++;
+					b++;
+				}
+			}
+			while (a < second&&a < list.total)//a不为空
+			{
+				temp[temp_i] = list[a];
+				temp_i++;
+				a++;
+			}
+			while (b < second + size && b < list.total)//b不为空
+			{
+				temp[temp_i] = list[b];
+				temp_i++;
+				b++;
+			}
+			//copy
+			int i = 0;
+			int j = first;
+			while (j < second + size && j < list.total)
+			{
+				list[j] = temp[i];
+				i++;
+				j++;
+			}
+			delete []temp;
+			//next 2
+			first += 2 * size;
+			second += 2 * size;
+		}
+		size *= 2;
+	}
+}
+
+void Sort::radixSort(Datalist& list)
+{
+	int baseNum = findMaxBase(list);
+	//list转换成链表first
+	node* first = new node(list[0]);
+	int i = 1;
+	node* p = first;
+	while (i <list.total)
+	{
+		p->next = new node(list[i]);
+		p = p->next;
+		i++;
+	}
+	//radixSort
+	radixSort(first, baseNum);
+	//链表转化成list
+	i = 0;
+	p = first;
+	while (p != nullptr)
+	{
+		list[i] = p->value;
+		i++;
+		p = p->next;
+	}
+}
+
+/*radixSort*/
+
+int Sort::findMaxBase(Datalist& list)
+{
+	int max = 0;
+	int i = 0;
+	while (i < list.total)
+	{
+		if (max < list[i])
+		{
+			max = list[i];
+		}
+		i++;
+	}
+	
+	int base = 10;
+	while (max%base != max)
+	{
+		base *= 10;
+	}
+	base /= 10;
+	return base;
+}
+
+void Sort::radixSort(node* P, int baseNum)
+{
+	if (baseNum == 1)
+	{
+		return;
+	}
+
+	//根据当前的baseNum进行重排
+	node* ptr = P;	//链表指针
+	node* bucket[10];
+	for (int i = 0; i < 10; i++)
+	{
+		bucket[i] = new node(0);
+	}
+
+	while (ptr != nullptr)//遍历链表 分配到bucket中
+	{
+		int key = (ptr->value / baseNum) % 10;
+		node* p = bucket[key];
+		while (p->next != nullptr)
+		{
+			p = p->next;
+		}
+		p->next = new node(ptr->value);
+		ptr = ptr->next;
+	}
+
+	//删除原链表
+	while (ptr != nullptr)
+	{
+		node* before = ptr;
+		ptr = ptr->next;
+		delete before;
+	}
+
+	//递归
+	while (baseNum != 10)//baseNum==1时递归终点
+	{
+		baseNum /= 10;
+		for (int i = 0; i < 10; i++)
+		{
+			if (bucket[i]->next != nullptr)//有元素的桶
+			{
+				radixSort(bucket[i], baseNum);
+			}
+		}
+	}
+
+	//连接桶 返回给P
+	node* start;
+	bool find_start = 0;
+	for (int i = 0; i < 10; i++)
+	{
+		ptr = bucket[i];
+		if (ptr->next == nullptr)continue;//排除前部分的空桶
+		else if(!find_start)
+		{
+			start = ptr->next;//返回链表的开头
+			find_start = 1;//只进来1次
+		}
+
+		while (ptr->next != nullptr)//ptr找到桶最后一个元素
+		{
+			ptr = ptr->next;
+		}
+
+		i++;
+		while (i < 10 && bucket[i]->next == nullptr)//下一个有元素的桶
+		{
+			i += 1;
+		}
+		if (i < 10 && bucket[i]->next != nullptr)
+		{
+			ptr->next = bucket[i]->next;
+			i--;//抵消for循环中的++
+		}
+	}
+
+	P = start;
+}
+
+/////////////////
+/////*OTHER*/////
+/////////////////
 void Sort::instruct()
 {
 	cout << "**            排序算法比较              **" << endl;

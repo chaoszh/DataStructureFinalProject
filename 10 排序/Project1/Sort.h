@@ -3,21 +3,36 @@
 class Sort
 {
 public:
+
 	Datalist datalist;
 	Sort();
 	~Sort();
 
-	Datalist bubbleSort(const Datalist& List);
-	Datalist insertionSort(const Datalist& List);
-	
+	void bubbleSort(Datalist& list);
+	void selectSort(Datalist& list);
+	void insertionSort(Datalist& list);
+	void shellSort(Datalist& list);
+	void quickSort(Datalist& list, int start, int end);
+	void heapSort(Datalist& list);
+	void mergeSort(Datalist& list);
+	void radixSort(Datalist& list);
 
 private:
-
-
-
 	void instruct();
 	char choice();
 
-
+	struct node {
+		int value;
+		node* next = nullptr;
+		node()
+		{
+		};
+		node(int _value)
+		{
+			value = _value;
+		}
+	};
+	void radixSort(node* P, int baseNum);
+	int findMaxBase(Datalist& list);
 };
 
