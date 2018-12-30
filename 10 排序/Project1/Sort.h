@@ -21,6 +21,13 @@ private:
 	void instruct();
 	char choice();
 
+	void swap(int&a, int&b)
+	{
+		int temp = a;
+		a = b;
+		b = temp;
+	}
+
 	struct node {
 		int value;
 		node* next = nullptr;
@@ -32,7 +39,9 @@ private:
 			value = _value;
 		}
 	};
-	void radixSort(node* P, int baseNum);
+	void radixSort(node* &P, int baseNum);
 	int findMaxBase(Datalist& list);
+
+	void heapAdjust(Datalist& list, int i, int size);
 };
 

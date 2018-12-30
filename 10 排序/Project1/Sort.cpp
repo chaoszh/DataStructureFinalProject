@@ -45,17 +45,17 @@ Sort::Sort()
 			quickSort(list, 0, list.total - 1);
 			break;
 		}
-		case '6':	//堆
+		case '6':	//heapSort
 		{
 			heapSort(list);
 			break;
 		}
-		case '7':	//归并
+		case '7':	//mergeSort
 		{
 			mergeSort(list);
 			break;
 		}
-		case '8':	//基数
+		case '8':	//radixSort
 		{
 			radixSort(list);
 			break;
@@ -188,10 +188,50 @@ void Sort::quickSort(Datalist& list, int start, int end)
 	}
 }
 
+/*heapSort*/
+
 void Sort::heapSort(Datalist& list)
 {
-	
+	int i = 0;
+	//构造最大堆
+	while (i < list.total)
+	{
+		heapAdjust(list, i, list.total);
+		i++;
+	}
+	int size = list.total;
+	//交换
+	while (size > 1)
+	{
+		swap(list[0], list[size - 1]);
+		size -= 1;
+		heapAdjust(list, 0, size);
+	}
 }
+
+void Sort::heapAdjust(Datalist& list, int i, int size)
+{
+	int left = 2 * i + 1;
+	int right = 2 * i + 2;
+	if (right < list.total)
+	{
+		if (list[right] > list[i])
+		{
+			swap(list[i], list[right]);
+			heapAdjust(list, right, size);
+		}
+	}
+	else if (left < list.total)
+	{
+		if (list[left] > list[i])
+		{
+			swap(list[i], list[left]);
+			heapAdjust(list, left, size);
+		}
+	}
+	return;
+}
+
 void Sort::mergeSort(Datalist& list)
 {
 	int size = 1;
@@ -251,6 +291,8 @@ void Sort::mergeSort(Datalist& list)
 	}
 }
 
+/*radixSort*/
+
 void Sort::radixSort(Datalist& list)
 {
 	int baseNum = findMaxBase(list);
@@ -277,8 +319,6 @@ void Sort::radixSort(Datalist& list)
 	}
 }
 
-/*radixSort*/
-
 int Sort::findMaxBase(Datalist& list)
 {
 	int max = 0;
@@ -301,7 +341,7 @@ int Sort::findMaxBase(Datalist& list)
 	return base;
 }
 
-void Sort::radixSort(node* P, int baseNum)
+void Sort::radixSort(node* &P, int baseNum)
 {
 	if (baseNum == 1)
 	{
@@ -329,6 +369,7 @@ void Sort::radixSort(node* P, int baseNum)
 	}
 
 	//删除原链表
+	ptr = P;
 	while (ptr != nullptr)
 	{
 		node* before = ptr;
@@ -344,7 +385,7 @@ void Sort::radixSort(node* P, int baseNum)
 		{
 			if (bucket[i]->next != nullptr)//有元素的桶
 			{
-				radixSort(bucket[i], baseNum);
+				radixSort(bucket[i]->next, baseNum);
 			}
 		}
 	}
