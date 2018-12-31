@@ -131,19 +131,19 @@ void Web::buildTree(char start)
 		//找出attached的最短边
 		for (i; i != attachedPoint.end(); i++)
 		{
+
 			edge* rival = (*i)->bro;
-			while (rival)
+			while (rival != nullptr)
 			{
-				//跳过使用过的边
-				if (rival->used)continue;
+				//跳过的边-1使用过2回路-靠检查另一个点是不是attachPoint里面来判断
+				if (isAttachedPoint(rival->target))continue;
 				//变更minEdge
 				if (rival->l < minEdge->l)
 				{
 					minEdge = rival;
 				}
 				//访问某个点的下一条边；
-				if (rival->bro)rival = rival->bro;
-				else break;
+				rival = rival->bro;
 			}
 		}
 
@@ -151,23 +151,34 @@ void Web::buildTree(char start)
 		point* newPoint = findPoint(minEdge->target);
 		attachedPoint.push_back(newPoint);
 
-		minEdge->used = 1;
-		findEdge(newPoint, minEdge->self)->used = 1;
-
+		//minEdge->used = 1;
+		//findEdge(newPoint, minEdge->self)->used = 1;
 		tree.push_back(minEdge);
 	}
+}
+
+bool Web::isAttachedPoint(char name)
+{
+	auto i = attachedPoint.begin();
+	while (i != attachedPoint.end())
+	{
+		if ((*i)->name == name)
+		{
+			return true;
+		}
+		i++;
+	}
+	return false;
 }
 
 void Web::showTree()
 {
 	cout << "最小生成树的顶点及边为：" << endl;
-
 	auto x = tree.begin();
 	for (x; x != tree.end(); x++)
 	{
 		cout << (*x)->self <<"-<"<< (*x)->l <<">->"<< (*x)->target;
 		cout << '\t';
 	}
-
 	cout << endl;
 }

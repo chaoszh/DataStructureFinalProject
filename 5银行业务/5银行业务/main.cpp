@@ -3,4 +3,5 @@
 int main()
 {
 	bank A;
+	system("pause");
 }

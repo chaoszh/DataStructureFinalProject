@@ -9,7 +9,6 @@ struct edge
 	char self;
 	char target;
 	int l;
-	bool used = 0;//使用过==1/未使用过==0
 	edge* bro = nullptr;
 
 	//构造函数
@@ -36,24 +35,17 @@ struct point
 	void attach(edge e)
 	{
 		edge* pointer = bro;
-		if (!pointer)
+		if (pointer == nullptr)
 		{
 			bro = &e;
 			return;
 		}
-		while (true)
+		while (pointer->bro != nullptr)
 		{
-			//bro不为空，则循环直到bro为空，并在bro的末尾添加上e，跳出循环。
-			if (pointer->bro)
-			{
-				pointer = pointer->bro;
-			}
-			else
-			{
-				pointer->bro = &e;
-				return;
-			}
+			pointer = pointer->bro;
 		}
+		pointer->bro = &e;
+		return;
 	}
 
 };
@@ -96,5 +88,7 @@ private:
 	
 	//生成树
 	vector<edge*> tree;
+
+	bool isAttachedPoint(char name);
 };
 

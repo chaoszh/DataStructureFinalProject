@@ -52,12 +52,12 @@ void Expression::Input()
 			Bracket.push_back(str[x]);
 			bracketValue += 2;
 
-			if (str[x + 1] == '-')//负数
+			if (str[x + 1] == '-' || str[x + 1] == '+')//带符号数
 			{
 				//默认数字不会输错
 				char digit[20] = {};
 				x+=2;
-				digit[0] = '-';
+				digit[0] = str[x + 1];
 				digit[1] = str[x];
 				int i = 2;
 				while (str[x + 1] <= '9' && str[x + 1] >= '0' || str[x + 1] == '.')
@@ -109,6 +109,7 @@ bool Expression::Build()
 	
 	while (true)
 	{
+		if (Symbol.size() == 0)return true;
 		if (Symbol.size()==1)
 		{
 			string newDigit = "";

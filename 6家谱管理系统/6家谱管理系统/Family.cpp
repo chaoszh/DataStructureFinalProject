@@ -7,12 +7,10 @@ Family::Family()
 
 }
 
-
 Family::~Family()
 {
 	deleteAll();
 }
-
 
 void Family::Begin()
 {
@@ -233,8 +231,9 @@ void Family::deleteMember(Member* member)
 	Member* upperNode = findUpper(member);
 	if (upperNode != nullptr)
 	{
-		if(upperNode->child == member)upperNode->child = nullptr;
-		else if (upperNode->neighbor == member)upperNode->neighbor = nullptr;
+		if (upperNode->child == member)upperNode->child = member->neighbor;
+		else if (upperNode->neighbor == member)upperNode->neighbor = member->neighbor;
+		member->neighbor = nullptr;
 	}
 	stack<Member*> node;
 	node.push(m);
