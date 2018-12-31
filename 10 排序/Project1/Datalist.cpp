@@ -8,13 +8,12 @@ Datalist::Datalist()
 Datalist::~Datalist()
 {
 	//cout << endl << "Address=" << this << "析构" << endl;
-	if(data!=nullptr)delete(data);
+	delete(data);
 }
 
 Datalist::Datalist(int _total)
 {
 	//cout << endl << "Address=" << this << "有参数构建" << endl;
-
 	total = _total;
 	data = new int[total];
 	srand((unsigned int)(time(NULL)));

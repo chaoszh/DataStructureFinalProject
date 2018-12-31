@@ -10,7 +10,7 @@ Sort::Sort()
 	cout << "请输入要产生的随机数的个数：";
 	cin >> i;
 	datalist = Datalist(i);
-	datalist.showDatalist();	//debug
+	//datalist.showDatalist();	//debug
 
 	bool flag = true;
 	while (flag)
@@ -18,6 +18,8 @@ Sort::Sort()
 		Datalist list;
 		list = datalist;
 		char Choice = choice();
+
+		float timeBegin = clock();
 		switch (Choice) 
 		{
 		case '1':	//bubbleSort
@@ -65,15 +67,15 @@ Sort::Sort()
 			flag = false;
 		}
 		}
-
+		float timeEnd = clock();
+		float duration = timeEnd - timeBegin;
 		//debug
+		cout << "Time consumed: " << duration << "ms" << endl;
+		//list.showDatalist();
 		cout << endl;
-		list.showDatalist();
-		cout << endl;
-		datalist.showDatalist();
+		//datalist.showDatalist();
 	}
 }
-
 
 Sort::~Sort()
 {
@@ -192,18 +194,24 @@ void Sort::quickSort(Datalist& list, int start, int end)
 
 void Sort::heapSort(Datalist& list)
 {
-	int i = 0;
+	int i = 1;
+	//找到最大树节点
+	while (i * 2 - 1 < list.total)
+	{
+		i *= 2;
+	}
+	i = i / 2 - 1;
 	//构造最大堆
-	while (i < list.total)
+	while (i > -1)
 	{
 		heapAdjust(list, i, list.total);
-		i++;
+		i--;
 	}
 	int size = list.total;
 	//交换
 	while (size > 1)
 	{
-		swap(list[0], list[size - 1]);
+		swap(list[0], list[size - 1]);//list最后一个数最大
 		size -= 1;
 		heapAdjust(list, 0, size);
 	}
@@ -213,7 +221,7 @@ void Sort::heapAdjust(Datalist& list, int i, int size)
 {
 	int left = 2 * i + 1;
 	int right = 2 * i + 2;
-	if (right < list.total)
+	if (right < size)
 	{
 		if (list[right] > list[i])
 		{
@@ -221,7 +229,7 @@ void Sort::heapAdjust(Datalist& list, int i, int size)
 			heapAdjust(list, right, size);
 		}
 	}
-	else if (left < list.total)
+	if (left < size)
 	{
 		if (list[left] > list[i])
 		{
@@ -311,7 +319,7 @@ void Sort::radixSort(Datalist& list)
 	//链表转化成list
 	i = 0;
 	p = first;
-	while (p != nullptr)
+	while (p != nullptr && i < list.total)
 	{
 		list[i] = p->value;
 		i++;
@@ -343,11 +351,6 @@ int Sort::findMaxBase(Datalist& list)
 
 void Sort::radixSort(node* &P, int baseNum)
 {
-	if (baseNum == 1)
-	{
-		return;
-	}
-
 	//根据当前的baseNum进行重排
 	node* ptr = P;	//链表指针
 	node* bucket[10];
@@ -377,8 +380,8 @@ void Sort::radixSort(node* &P, int baseNum)
 		delete before;
 	}
 
-	//递归
-	while (baseNum != 10)//baseNum==1时递归终点
+	//对10个链表递归
+	if (baseNum != 1)//不是最低位
 	{
 		baseNum /= 10;
 		for (int i = 0; i < 10; i++)
@@ -392,32 +395,44 @@ void Sort::radixSort(node* &P, int baseNum)
 
 	//连接桶 返回给P
 	node* start;
+	node* end;
 	bool find_start = 0;
 	for (int i = 0; i < 10; i++)
 	{
-		ptr = bucket[i];
+		node* ptr = bucket[i];
 		if (ptr->next == nullptr)continue;//排除前部分的空桶
 		else if(!find_start)
 		{
 			start = ptr->next;//返回链表的开头
 			find_start = 1;//只进来1次
 		}
+		else
+		{
+			end->next = ptr->next;
+		}
 
 		while (ptr->next != nullptr)//ptr找到桶最后一个元素
 		{
 			ptr = ptr->next;
 		}
+		end = ptr;
 
-		i++;
-		while (i < 10 && bucket[i]->next == nullptr)//下一个有元素的桶
-		{
-			i += 1;
-		}
-		if (i < 10 && bucket[i]->next != nullptr)
-		{
-			ptr->next = bucket[i]->next;
-			i--;//抵消for循环中的++
-		}
+		//i++;
+		//while (i < 10 && bucket[i]->next == nullptr)//下一个有元素的桶
+		//{
+		//	i += 1;
+		//}
+		//if (i < 10 && bucket[i]->next != nullptr)
+		//{
+		//	ptr->next = bucket[i]->next;
+		//	i--;//抵消for循环中的++
+		//}
+	}
+	
+	//删除桶
+	for (int i = 0; i < 10; i++)
+	{
+		delete bucket[i];
 	}
 
 	P = start;
