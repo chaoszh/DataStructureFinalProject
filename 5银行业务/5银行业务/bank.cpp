@@ -36,7 +36,7 @@ bank::bank()
 		{
 			if (iterB == B.end())
 			{
-				flag == 0;
+				flag = 0;
 				break;
 			}
 			else
@@ -52,6 +52,11 @@ bank::bank()
 		}
 		cout << *iterA << ' ';
 		iterA++;
+		if (iterA == A.end())
+		{
+			flag = 2;
+			break;
+		}
 		cout << *iterA << ' ';
 		cout << *iterB << ' ';
 
