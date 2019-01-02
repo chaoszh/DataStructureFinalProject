@@ -14,6 +14,7 @@ int main()
 {
 	hint();
 	Web web;
+	system("pause");
 }
 
 void hint()

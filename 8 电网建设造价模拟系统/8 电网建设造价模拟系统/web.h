@@ -4,65 +4,49 @@
 #include <assert.h>
 using namespace std;
 
-struct edge
+class Node
 {
-	char self;
-	char target;
-	int l;
-	edge* bro = nullptr;
-
-	//构造函数
-	edge(char _self, char _target, int _l)
-	{
-		self = _self;
-		target = _target;
-		l = _l;
-	}
-};
-
-struct point
-{
+private:
 	char name;
-	edge* bro = nullptr;
-
-	//构造函数
-	point(char _name)
+	int index;
+public:
+	Node(){};
+	Node(char _name, int _index)
+	{
+		name = _name;
+		index = _index;
+	}
+	char getName()
+	{
+		return name;
+	}
+	int getIndex()
+	{
+		return index;
+	}
+	void setName(char _name)
 	{
 		name = _name;
 	}
-
-	//给顶点添加相关的边
-	void attach(edge e)
+	void setIndex(int _index)
 	{
-		edge* pointer = bro;
-		if (pointer == nullptr)
-		{
-			bro = &e;
-			return;
-		}
-		while (pointer->bro != nullptr)
-		{
-			pointer = pointer->bro;
-		}
-		pointer->bro = &e;
-		return;
+		index = _index;
 	}
-
 };
 
-//struct stick
-//{
-//	char a, b;
-//	int length;
-//
-//	//构造函数
-//	stick(char _a, char _b, int _length)
-//	{
-//		a = _a;
-//		b = _b;
-//		length = _length;
-//	}
-//};
+class Edge
+{
+public:
+	int length;
+	char start;
+	char end;
+	Edge(int _length, char _start, char _end)
+	{
+		length = _length;
+		start = _start;
+		end = _end;
+	}
+};
 
 class Web
 {
@@ -72,23 +56,28 @@ public:
 
 	void construction();
 
-	point* findPoint(char x);
-	edge* findEdge(point* x, char anotherP);
-
 	//建立最小生成树
-	void buildTree(char start);
+	void buildTree();
 
 	//展示最小生成树
 	void showTree();
 
 private:
-	int n;
-	vector<point> Point;
-	vector<point*> attachedPoint;
+	int nodeNum;
+	Node* nodeList;
+	vector<Edge> edge;
 	
-	//生成树
-	vector<edge*> tree;
+	int** cost;
+	bool* nearVec;//选中1 未选0
+	int* lowCost;
+	int count = 0;
 
-	bool isAttachedPoint(char name);
+	int getIndex(char name);
+	char getName(int index);
+	int min(int a, int b)
+	{
+		if (a < b)return a;
+		else return b;
+	}
 };
 

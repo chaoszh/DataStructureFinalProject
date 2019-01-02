@@ -8,13 +8,13 @@ public:
 	Sort();
 	~Sort();
 
-	void bubbleSort(Datalist& list);
-	void selectSort(Datalist& list);
-	void insertionSort(Datalist& list);
-	void shellSort(Datalist& list);
-	void quickSort(Datalist& list, int start, int end);
-	void heapSort(Datalist& list);
-	void mergeSort(Datalist& list);
+	void bubbleSort(Datalist& list, unsigned long long& t);
+	void selectSort(Datalist& list, unsigned long long& t);
+	void insertionSort(Datalist& list, unsigned long long& t);
+	void shellSort(Datalist& list, unsigned long long& t);
+	void quickSort(Datalist& list, int start, int end, unsigned long long& t);
+	void heapSort(Datalist& list, unsigned long long& t);
+	void mergeSort(Datalist& list, unsigned long long& t);
 	void radixSort(Datalist& list);
 
 private:
@@ -42,6 +42,6 @@ private:
 	void radixSort(node* &P, int baseNum);
 	int findMaxBase(Datalist& list);
 
-	void heapAdjust(Datalist& list, int i, int size);
+	void heapAdjust(Datalist& list, int i, int size, unsigned long long& t);
 };
 

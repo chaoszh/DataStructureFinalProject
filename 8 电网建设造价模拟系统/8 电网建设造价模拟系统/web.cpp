@@ -10,6 +10,13 @@ Web::Web()
 
 Web::~Web()
 {
+	delete[]nodeList;
+	delete[]nearVec;
+	delete[]lowCost;
+	for (int i = 0; i < nodeNum; i++)
+	{
+		delete[]cost[i];
+	}
 }
 
 void Web::construction()
@@ -27,16 +34,33 @@ void Web::construction()
 			//输入顶点信息
 			case'A':
 				cout << "请输入顶点的个数：";
-				cin >> n;
+				cin >> nodeNum;
+				nodeList = new Node[nodeNum];
 				cout << "请依次输入各顶点的名称：" << endl;
 				char _name;
-				for (int i = 0; i < n; i++)
+				//创建顶点和相关信息
+				for (int i = 0; i < nodeNum; i++)
 				{
 					cin >> _name;
-					Point.push_back(_name);
+					nodeList[i].setName(_name);
+					nodeList[i].setIndex(i);
 				}
+				//初始化
+				nearVec = new bool[nodeNum];
+				lowCost = new int[nodeNum];
+				cost = new int*[nodeNum];
+				for (int i = 0; i < nodeNum; i++)
+				{
+					nearVec[i] = 0;
+					lowCost[i] = INT_MAX;
+					cost[i] = new int[nodeNum];
+					for (int j = 0; j < nodeNum; j++)
+					{
+						cost[i][j] = INT_MAX;
+					}
+				}
+				
 				break;
-
 			//输入顶点的边的信息
 			case'B':
 				cout << "输入顶点和边的信息，若要终止输入，输入? ? 0" << endl;
@@ -54,10 +78,9 @@ void Web::construction()
 					}
 					else
 					{
-						point* A = findPoint(a);
-						A->attach(edge(a, b, l));
-						point* B = findPoint(b);
-						B->attach(edge(b, a, l));
+						int indexA = getIndex(a);
+						int indexB = getIndex(b);
+						cost[indexA][indexB] = cost[indexB][indexA] = l;
 					}
 				}
 				break;
@@ -67,7 +90,9 @@ void Web::construction()
 				cout << "请输入起始顶点：";
 				char start;
 				cin >> start;
-				buildTree(start);
+				nearVec[getIndex(start)] = 1;
+				count++;
+				buildTree();
 				cout << "生成Prim最小生成树！" << endl;
 				break;
 			//显示最小生成树
@@ -82,103 +107,127 @@ void Web::construction()
 	}
 }
 
-point* Web::findPoint(char x)
+int Web::getIndex(char name)
 {
-	auto i = Point.begin();
-	for (i; i != Point.end(); i++)
+	for (int i = 0; i < nodeNum; i++)
 	{
-		if (i->name == x)
+		if (nodeList[i].getName() == name)
 		{
-			point* RETURN = &(*i);
-			return RETURN;
+			return nodeList[i].getIndex();
 		}
 	}
-	assert("WRONG!：函数findPoint()返回了一个空指针！");
-	return nullptr;
+	return -1;
 }
 
-edge* Web::findEdge(point* x, char anotherP)
+char Web::getName(int index)
 {
-	edge* e = x->bro;
-	while (e)
+	for (int i = 0; i < nodeNum; i++)
 	{
-		if (e->target == anotherP)
+		if (nodeList[i].getIndex() == index)
 		{
-			return e;
+			return nodeList[i].getName();
 		}
-		else
-		{
-			e = e->bro;
-		}
-	}
-
-	assert("WRONG!：函数findEdge()返回了一个空指针！");
-	return nullptr;
-}
-
-void Web::buildTree(char start)
-{
-	point* x = findPoint(start);
-	attachedPoint.push_back(x);
-
-	while (attachedPoint.size() < n)
-	{
-		//检查attachedPoint，并找出目前的最短边
-		//将最短边所连接的点再加入attachedPoint，并把生成树的信息录入到Tree
-		auto i = attachedPoint.begin();
-		edge* minEdge = (*i)->bro;
 		
-		//找出attached的最短边
-		for (i; i != attachedPoint.end(); i++)
-		{
+	}
+	return 0;
+}
 
-			edge* rival = (*i)->bro;
-			while (rival != nullptr)
+void Web::buildTree()
+{
+	//存储离未知点i最小距离的已知点j
+	int* lowCostNode = new int[nodeNum];
+	//update lowCost
+	//找未知点i到已知点j的最小距离
+	for (int i = 0; i < nodeNum; i++)
+	{
+		if (nearVec[i] == 1)continue;
+		for (int j = 0; j < nodeNum; j++)
+		{
+			if (nearVec[j] != 1)continue;
+			if (cost[i][j] <= lowCost[i])
 			{
-				//跳过的边-1使用过2回路-靠检查另一个点是不是attachPoint里面来判断
-				if (isAttachedPoint(rival->target))continue;
-				//变更minEdge
-				if (rival->l < minEdge->l)
-				{
-					minEdge = rival;
-				}
-				//访问某个点的下一条边；
-				rival = rival->bro;
+				lowCost[i] = cost[i][j];
+				lowCostNode[i] = j;
 			}
 		}
-
-		//attachedPoint、使用过的边、生成树更新
-		point* newPoint = findPoint(minEdge->target);
-		attachedPoint.push_back(newPoint);
-
-		//minEdge->used = 1;
-		//findEdge(newPoint, minEdge->self)->used = 1;
-		tree.push_back(minEdge);
 	}
-}
 
-bool Web::isAttachedPoint(char name)
-{
-	auto i = attachedPoint.begin();
-	while (i != attachedPoint.end())
+	////debug
+	//cout << "lowcost[]:";
+	//for (int i = 0; i < nodeNum; i++)
+	//{
+	//	cout << lowCost[i] << "         \t";
+	//}
+	//cout << endl;
+
+	//cout << "lowcostNode[]:";
+	//for (int i = 0; i < nodeNum; i++)
+	//{
+	//	cout << lowCostNode[i] << '\t';
+	//}
+	//cout << endl;
+
+	//根据lowCost选择新加入的点
+	int addNode = 0;
+	int minCost = lowCost[0];
+	for (int i = 1; i < nodeNum; i++)
 	{
-		if ((*i)->name == name)
+		if (nearVec[i] == 1)continue;
+		if (minCost > lowCost[i])
 		{
-			return true;
+			minCost = lowCost[i];
+			addNode = i;
 		}
-		i++;
 	}
-	return false;
+
+	////debug
+	//cout << "cost[][]\t\tcow1\t\tcow2\t\tcow3" << endl;
+	//for (int i = 0; i < nodeNum; i++)
+	//{
+	//	cout << "line" << i << "\t\t";
+	//	for (int j = 0; j < nodeNum; j++)
+	//	{
+	//		if (cost[i][j] == INT_MAX)
+	//		{
+	//			cout << 'X' << "\t\t";
+	//		}
+	//		else
+	//		{
+	//			cout << cost[i][j] << "\t\t";
+	//		}
+	//	}
+	//	cout << endl;
+	//}
+	//cout << endl;
+
+
+
+	//update nearVec
+	nearVec[addNode] = 1;
+	count++;
+
+	////debug
+	//cout << "nearVec[]:";
+	//for (int i = 0; i < nodeNum; i++)
+	//{
+	//	cout << nearVec[i] << '\t';
+	//}
+	//cout << endl;
+
+	//加入边到已选边数组edge里
+	Edge edgeTemp(lowCost[addNode], getName(addNode), getName(lowCostNode[addNode]));
+	edge.push_back(edgeTemp);
+	if (count != nodeNum)buildTree();
+	return;
 }
 
 void Web::showTree()
 {
-	cout << "最小生成树的顶点及边为：" << endl;
-	auto x = tree.begin();
-	for (x; x != tree.end(); x++)
+	auto iter = edge.begin();
+	while (iter != edge.end())
 	{
-		cout << (*x)->self <<"-<"<< (*x)->l <<">->"<< (*x)->target;
-		cout << '\t';
+		cout << iter->start << "-<" << iter->length << ">->" << iter->end << '\t';
+		iter++;
 	}
-	cout << endl;
+	return;
 }

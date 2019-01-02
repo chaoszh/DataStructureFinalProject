@@ -20,46 +20,79 @@ Sort::Sort()
 		char Choice = choice();
 
 		float timeBegin = clock();
+		unsigned long long exchangeCount = 0;
 		switch (Choice) 
 		{
 		case '1':	//bubbleSort
 		{
-			bubbleSort(list);
+			bubbleSort(list, exchangeCount);
+			float timeEnd = clock();
+			float duration = timeEnd - timeBegin;
+			cout << "冒泡排序所用时间：\t" << duration << "ms" << endl;
+			cout << "冒泡排序交换次数：\t" << exchangeCount << endl;
 			break;
 		}
 		case '2':	//selectSort
 		{
-			selectSort(list);
+			selectSort(list, exchangeCount);
+			float timeEnd = clock();
+			float duration = timeEnd - timeBegin;
+			cout << "选择排序所用时间：\t" << duration << "ms" << endl;
+			cout << "选择排序交换次数：\t" << exchangeCount << endl;
 			break;
 		}
 		case '3':	//insertionSort
 		{
-			insertionSort(list);
+			insertionSort(list, exchangeCount);
+			float timeEnd = clock();
+			float duration = timeEnd - timeBegin;
+			cout << "直接插入排序所用时间：\t" << duration << "ms" << endl;
+			cout << "直接插入排序交换次数：\t" << exchangeCount << endl;
 			break;
 		}
 		case '4':	//shellSort
 		{
-			shellSort(list);
+			shellSort(list, exchangeCount);
+			float timeEnd = clock();
+			float duration = timeEnd - timeBegin;
+			cout << "希尔排序所用时间：\t" << duration << "ms" << endl;
+			cout << "希尔排序交换次数：\t" << exchangeCount << endl;
 			break;
 		}
 		case '5':	//quickSort
 		{
-			quickSort(list, 0, list.total - 1);
+			quickSort(list, 0, list.total - 1, exchangeCount);
+			float timeEnd = clock();
+			float duration = timeEnd - timeBegin;
+			cout << "快速排序所用时间：\t" << duration << "ms" << endl;
+			cout << "快速排序交换次数：\t" << exchangeCount << endl;
 			break;
 		}
 		case '6':	//heapSort
 		{
-			heapSort(list);
+			heapSort(list, exchangeCount);
+			float timeEnd = clock();
+			float duration = timeEnd - timeBegin;
+			cout << "堆排序所用时间：\t" << duration << "ms" << endl;
+			cout << "堆排序交换次数：\t" << exchangeCount << endl;
 			break;
 		}
 		case '7':	//mergeSort
 		{
-			mergeSort(list);
+			mergeSort(list, exchangeCount);
+			float timeEnd = clock();
+			float duration = timeEnd - timeBegin;
+			cout << "归并排序所用时间：\t" << duration << "ms" << endl;
+			cout << "归并排序交换次数：\t" << exchangeCount << endl;
 			break;
 		}
 		case '8':	//radixSort
 		{
 			radixSort(list);
+			float timeEnd = clock();
+			float duration = timeEnd - timeBegin;
+			cout << "基数排序所用时间：\t" << duration << "ms" << endl;
+			cout << "基数排序交换次数：\t" << exchangeCount << endl;
 			break;
 		}
 		case '9':
@@ -67,10 +100,7 @@ Sort::Sort()
 			flag = false;
 		}
 		}
-		float timeEnd = clock();
-		float duration = timeEnd - timeBegin;
-		//debug
-		cout << "Time consumed: " << duration << "ms" << endl;
+
 		//list.showDatalist();
 		cout << endl;
 		//datalist.showDatalist();
@@ -81,7 +111,7 @@ Sort::~Sort()
 {
 }
 
-void Sort::bubbleSort(Datalist& list)
+void Sort::bubbleSort(Datalist& list, unsigned long long& t)
 {
 	for (int i = 0; i < list.total - 1; i++)
 	{
@@ -92,12 +122,13 @@ void Sort::bubbleSort(Datalist& list)
 				int temp = list[j];
 				list[j] = list[j + 1];
 				list[j + 1] = temp;
+				t+=3;
 			}
 		}
 	}
 }
 
-void Sort::selectSort(Datalist& list)
+void Sort::selectSort(Datalist& list, unsigned long long& t)
 {
 	for (int i = 0; i < list.total - 1; i++)
 	{
@@ -107,15 +138,17 @@ void Sort::selectSort(Datalist& list)
 			if (list[min_index] > list[j])
 			{
 				min_index = j;
+				t++;
 			}
 		}
 		int temp = list[i];
 		list[i] = list[min_index];
 		list[min_index] = temp;
+		t+=3;
 	}
 }
 
-void Sort::insertionSort(Datalist& list)
+void Sort::insertionSort(Datalist& list, unsigned long long& time)
 {
 	for (int t = 1; t < list.total; t++)
 	{
@@ -124,13 +157,15 @@ void Sort::insertionSort(Datalist& list)
 		while (temp < list[i] && i>=0)
 		{
 			list[i + 1] = list[i];
+			time++;
 			i--;
 		}
 		list[i + 1] = temp;
+		time++;
 	}
 }
 
-void Sort::shellSort(Datalist& list)
+void Sort::shellSort(Datalist& list, unsigned long long& time)
 {
 	int gap = 7;
 	while (gap >= 1)
@@ -147,8 +182,10 @@ void Sort::shellSort(Datalist& list)
 				{
 					list[i + gap] = list[i];
 					i -= gap;
+					time++;
 				}
 				list[i + gap] = temp;
+				time++;
 			}
 			start--;
 
@@ -165,7 +202,7 @@ void Sort::shellSort(Datalist& list)
 	}
 }
 
-void Sort::quickSort(Datalist& list, int start, int end)
+void Sort::quickSort(Datalist& list, int start, int end, unsigned long long& t)
 {
 	if (end <= start)
 	{
@@ -182,17 +219,18 @@ void Sort::quickSort(Datalist& list, int start, int end)
 				list[mid] = list[i];
 				list[i] = list[mid + 1];
 				list[mid + 1] = temp;
+				t += 3;
 				mid++;
 			}
 		}
-		quickSort(list, start, mid - 1);
-		quickSort(list, mid + 1, end);
+		quickSort(list, start, mid - 1, t);
+		quickSort(list, mid + 1, end, t);
 	}
 }
 
 /*heapSort*/
 
-void Sort::heapSort(Datalist& list)
+void Sort::heapSort(Datalist& list, unsigned long long& t)
 {
 	int i = 1;
 	//找到最大树节点
@@ -204,7 +242,7 @@ void Sort::heapSort(Datalist& list)
 	//构造最大堆
 	while (i > -1)
 	{
-		heapAdjust(list, i, list.total);
+		heapAdjust(list, i, list.total, t);
 		i--;
 	}
 	int size = list.total;
@@ -213,11 +251,11 @@ void Sort::heapSort(Datalist& list)
 	{
 		swap(list[0], list[size - 1]);//list最后一个数最大
 		size -= 1;
-		heapAdjust(list, 0, size);
+		heapAdjust(list, 0, size, t);
 	}
 }
 
-void Sort::heapAdjust(Datalist& list, int i, int size)
+void Sort::heapAdjust(Datalist& list, int i, int size, unsigned long long& t)
 {
 	int left = 2 * i + 1;
 	int right = 2 * i + 2;
@@ -226,7 +264,8 @@ void Sort::heapAdjust(Datalist& list, int i, int size)
 		if (list[right] > list[i])
 		{
 			swap(list[i], list[right]);
-			heapAdjust(list, right, size);
+			t++;
+			heapAdjust(list, right, size, t);
 		}
 	}
 	if (left < size)
@@ -234,13 +273,15 @@ void Sort::heapAdjust(Datalist& list, int i, int size)
 		if (list[left] > list[i])
 		{
 			swap(list[i], list[left]);
-			heapAdjust(list, left, size);
+			t++;
+			heapAdjust(list, left, size, t);
 		}
 	}
 	return;
 }
 
-void Sort::mergeSort(Datalist& list)
+
+void Sort::mergeSort(Datalist& list, unsigned long long& t)
 {
 	int size = 1;
 	while (size < list.total)//size
@@ -261,12 +302,14 @@ void Sort::mergeSort(Datalist& list)
 					temp[temp_i] = list[a];
 					temp_i++;
 					a++;
+					t++;
 				}
 				else
 				{
 					temp[temp_i] = list[b];
 					temp_i++;
 					b++;
+					t++;
 				}
 			}
 			while (a < second&&a < list.total)//a不为空
@@ -459,7 +502,7 @@ void Sort::instruct()
 char Sort::choice()
 {
 	char in;
-	cout << endl << "请选择排序算法：";
+	cout << endl << "请选择排序算法：\t";
 	cin >> in;
 	return in;
 }
